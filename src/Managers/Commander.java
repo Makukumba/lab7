@@ -29,6 +29,7 @@ public class Commander {
         commands.put("remove_lower", new RemoveLowerCommand(cm));
         commands.put("remove_any_by_description", new Remove_any_by_description(cm));
         commands.put("print_field_descending_head", new Print_field_descending_head(cm));
+        commands.put("createdb",new Createdb());
     }
 
     public void start() throws IOException {
