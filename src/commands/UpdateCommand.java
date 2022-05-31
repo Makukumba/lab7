@@ -3,6 +3,7 @@ package commands;
 import Managers.CommandManager;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class UpdateCommand extends AbstractCommand {
     CommandManager cm;
@@ -14,6 +15,10 @@ public class UpdateCommand extends AbstractCommand {
 
 
     public void execute() throws IOException {
-        cm.update();
+        try {
+            cm.update();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

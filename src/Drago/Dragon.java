@@ -1,20 +1,24 @@
 package Drago;
 
 
+import java.time.LocalDate;
+
 public class Dragon implements Comparable<Dragon> {
     private Long id;
     private String name;
     private Coordinates coordinates;
+    private LocalDate creationDate;
     private String description;
     private int age;
     private Integer weight;
     private DragonCharacter character;
     private DragonHead head;
 
-    public Dragon(Long id, String name, Coordinates coordinates, String description, int age, int weight, DragonCharacter character, DragonHead head) {
+    public Dragon(Long id, String name, Coordinates coordinates,LocalDate creationDate, String description, int age, int weight, DragonCharacter character, DragonHead head) {
         this.id = id;
         this.name = name;
         this.coordinates = coordinates;
+        this.creationDate = creationDate;
         this.description = description;
         this.age = age;
         this.weight = weight;
@@ -35,6 +39,8 @@ public class Dragon implements Comparable<Dragon> {
     public Coordinates getCoordinates() {
         return coordinates;
     }
+
+    public LocalDate getCreationDate() { return creationDate; }
 
     public String getDescription() {
         return description;
@@ -66,6 +72,10 @@ public class Dragon implements Comparable<Dragon> {
 
     public void setCoordinates(Coordinates coordinates) {
         this.coordinates = coordinates;
+    }
+
+    public void setCreationDate(LocalDate creationDate){
+        this.creationDate = creationDate;
     }
 
     public void setDescription(String description) {
@@ -100,7 +110,7 @@ public class Dragon implements Comparable<Dragon> {
     }
 
     public String toString() {
-        return " Id: " + id + " Имя: " + name + " Координаты: " + "(" + coordinates + ")" + " Возраст: " + age + " Описание: " + description + " Вес: " + weight + " Характер: " + character + " Количество глаз: " + head;
+        return " Id: " + id + " Имя: " + name + " Координаты: " + "(" + coordinates + ")" + " Время создания: "+creationDate+ " Возраст: " + age + " Описание: " + description + " Вес: " + weight + " Характер: " + character + " Количество глаз: " + head;
     }
 
 }

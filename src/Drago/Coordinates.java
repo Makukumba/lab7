@@ -21,7 +21,7 @@ public class Coordinates {
 
 
     public String toString() {
-        return "X:" + x + " Y:" + y;
+        return "X:" + x + "  Y:" + y;
     }
 
 

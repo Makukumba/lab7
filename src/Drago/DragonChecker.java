@@ -81,7 +81,10 @@ public class DragonChecker {
         y = Y();
         return new Coordinates(x, y);
     }
-
+    public LocalDate CREATIONDATE(){
+        LocalDate creationDate = LocalDate.now();
+        return creationDate;
+    }
     public String DESCRIPTION() {
         String description = null;
         int a =0;

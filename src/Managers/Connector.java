@@ -26,10 +26,17 @@ public class Connector<pubilc> {
         Statement statement = null;
 
         String createTableSQL = "CREATE TABLE DRAGON("
-                + "ID INTEGER NOT NULL, "
-                + "NAME VARCHAR NOT NULL, "
-                + "DESCRIPTION VARCHAR NOT NULL, "
-                + "AGE INTEGER NOT NULL" + ")";
+                + "ID INTEGER UNIQUE, "
+                + "NAME CHAR(10) NOT NULL, "
+                + "X INTEGER NOT NULL, "
+                + "Y INTEGER NOT NULL, "
+                + "DATE DATE NOT NULL, "
+                + "DESCRIPTION CHAR(10) NOT NULL, "
+                + "AGE INTEGER NOT NULL, "
+                + "WEIGHT INTEGER NOT NULL, "
+                + "DRAGONCHARACTER CHAR(10) NOT NULL, "
+                + "DRAGONHEAD DOUBLE PRECISION NOT NULL"
+                + ")";
 
         try {
             dbConnection = getDBConnection();
@@ -53,12 +60,11 @@ public class Connector<pubilc> {
     public void Insert() throws SQLException {
         Connection dbConnection = null;
         Statement statement = null;
-        DragonChecker dch = new DragonChecker();
-        Integer agE = dch.AGE();
-        String aGE = Integer.toString(agE);
-        String insertTableSQL = "INSERT INTO DRAGON"
+        DragonChecker d = new DragonChecker();
+        String aGE = Integer.toString(d.AGE());
+        String  insertTableSQL = "INSERT INTO DRAGON"
                 + "(ID, NAME, DESCRIPTION, AGE) " + "VALUES"
-                + "(2, 'Makumba','lox'," +aGE+ ")";
+                + "(5, 'Makumba','lox'," +aGE+ ")";
         try {
             dbConnection = getDBConnection();
             statement = dbConnection.createStatement();

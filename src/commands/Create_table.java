@@ -5,11 +5,11 @@ import Managers.Connector;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class Createdb extends AbstractCommand{
+public class Create_table extends AbstractCommand{
 
 
-    public Createdb() {
-        super("createdb", "создаёт таблицу");
+    public Create_table() {
+        super("create_table", "создаёт таблицу");
     }
 
     public void execute() throws IOException {

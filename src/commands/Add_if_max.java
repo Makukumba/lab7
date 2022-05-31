@@ -3,6 +3,7 @@ package commands;
 import Managers.CommandManager;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class Add_if_max extends AbstractCommand {
     CommandManager cm;
@@ -13,7 +14,11 @@ public class Add_if_max extends AbstractCommand {
     }
 
     public void execute() throws IOException {
-        cm.add_if_max();
+        try {
+            cm.add_if_max();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 }

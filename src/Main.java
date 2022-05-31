@@ -8,20 +8,21 @@ public class Main {
     public static void main(String args[]) throws SQLException {
         Connector connector = new Connector();
         //connector.getDBConnection();
-        //connector.createDbUserTable();
-        connector.Insert();
-        connector.Show();
-         //connector.Delete();
+        connector.createDbUserTable();
+        //connector.Insert();
+        //connector.Show();
+        //connector.Delete();
 
-       /* CommandManager cm = new CommandManager();
+        CommandManager cm = new CommandManager();
         Commander c = new Commander(cm);
+        cm.read();
         try {
             c.start();
         } catch (IOException e) {
             e.printStackTrace();
-*/
 
 
+        }
     }
 }
 
