@@ -1,2 +1,5 @@
-package Managers;public class Authorization {
+package Managers;
+
+public class Authorization {
+
 }
