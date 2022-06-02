@@ -1,6 +1,7 @@
 package Managers;
 
 import Drago.*;
+import Users.Enter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -19,6 +20,9 @@ import static Managers.Connector.getDBConnection;
 public class CommandManager {
     DragonChecker dragonChecker = new DragonChecker();
     TreeSet<Dragon> ts = new TreeSet();
+    Enter enter = new Enter();
+    Connection dbConnection = null;
+    Statement statement = null;
 
     public TreeSet<Dragon> read() {
 
@@ -72,13 +76,12 @@ public class CommandManager {
 
 
     public void info() {
-        LocalDate date = LocalDate.now();
         if (ts.isEmpty()) {
             System.out.println("Ошибка, Сначала добавьте элементы в коллекцию");
         } else {
             System.out.println("Коллекция типа " + ts.getClass().getName());
             System.out.println("Количество элементов в коллекции " + ts.size());
-            System.out.println("Дата создания коллекции: " + date);
+            System.out.println("Дата создания коллекции: " + ts.first().getCreationDate());
         }
     }
 
@@ -90,14 +93,16 @@ public class CommandManager {
 
 
     public TreeSet<Dragon> add() throws SQLException {
-        Connection dbConnection = null;
-        Statement statement = null;
+        try {
+            enter.Entering();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         DragonChecker dragonChecker = new DragonChecker();
         Dragon dragon = new Dragon(dragonChecker.ID(ts), dragonChecker.NAME(), dragonChecker.COORDINATES(), dragonChecker.CREATIONDATE(), dragonChecker.DESCRIPTION(), dragonChecker.AGE(), dragonChecker.WEIGHT(), dragonChecker.CHAR(), dragonChecker.dragonHead());
         String insertTableSQL = "INSERT INTO DRAGON"
-                + "(ID, NAME, X, Y, DATE, DESCRIPTION, AGE, WEIGHT, DRAGONCHARACTER, DRAGONHEAD)" + "VALUES"
-                + "(" + dragon.getId() + ",'" + dragon.getName() + "', " + dragon.getCoordinates().getX() + ", " + dragon.getCoordinates().getY() + ", '" + dragon.getCreationDate() + "'," + dragon.getDescription() + ", " + dragon.getAge() + ", " + dragon.getWeight() + ",'" + dragon.getCharacter() + "', " + dragon.getHead().getEyesCount() + ")";
-
+                + "(LOGIN, ID, NAME, X, Y, DATE, DESCRIPTION, AGE, WEIGHT, DRAGONCHARACTER, DRAGONHEAD)" + "VALUES"
+                + "('"+enter.getLogin()+"', " + dragon.getId() + ",'" + dragon.getName() + "', " + dragon.getCoordinates().getX() + ", " + dragon.getCoordinates().getY() + ", '" + dragon.getCreationDate() + "'," + dragon.getDescription() + ", " + dragon.getAge() + ", " + dragon.getWeight() + ",'" + dragon.getCharacter() + "', " + dragon.getHead().getEyesCount() + ")";
         try {
             dbConnection = getDBConnection();
             statement = dbConnection.createStatement();
@@ -160,8 +165,8 @@ public class CommandManager {
                     Connection dbConnection = null;
                     Statement statement = null;
                     String insertTableSQL = "INSERT INTO DRAGON"
-                            + "(ID, NAME, X, Y, DATE, DESCRIPTION, AGE, WEIGHT, DRAGONCHARACTER, DRAGONHEAD)" + "VALUES"
-                            + "(" + dragon.getId() + ",'" + dragon.getName() + "', " + dragon.getCoordinates().getX() + ", " + dragon.getCoordinates().getY() + ", '" + dragon.getCreationDate() + "', " + dragon.getDescription() + ", " + dragon.getAge() + ", " + dragon.getWeight() + ",'" + dragon.getCharacter() + "', " + dragon.getHead().getEyesCount() + ")";
+                            + "(LOGIN, ID, NAME, X, Y, DATE, DESCRIPTION, AGE, WEIGHT, DRAGONCHARACTER, DRAGONHEAD)" + "VALUES"
+                            + "('"+enter.getLogin()+"', " + dragon.getId() + ",'" + dragon.getName() + "', " + dragon.getCoordinates().getX() + ", " + dragon.getCoordinates().getY() + ", '" + dragon.getCreationDate() + "', " + dragon.getDescription() + ", " + dragon.getAge() + ", " + dragon.getWeight() + ",'" + dragon.getCharacter() + "', " + dragon.getHead().getEyesCount() + ")";
 
                     try {
                         dbConnection = getDBConnection();
@@ -214,8 +219,8 @@ public class CommandManager {
                     Connection dbConnection = null;
                     Statement statement = null;
                     String insertTableSQL = "INSERT INTO DRAGON"
-                            + "(ID, NAME, X, Y, DATE, DESCRIPTION, AGE, WEIGHT, DRAGONCHARACTER, DRAGONHEAD)" + "VALUES"
-                            + "(" + dragon.getId() + ",'" + dragon.getName() + "', " + dragon.getCoordinates().getX() + ", " + dragon.getCoordinates().getY() + ", '" + dragon.getCreationDate() + "'," + dragon.getDescription() + ", " + dragon.getAge() + ", " + dragon.getWeight() + ",'" + dragon.getCharacter() + "', " + dragon.getHead().getEyesCount() + ")";
+                            + "(LOGIN, ID, NAME, X, Y, DATE, DESCRIPTION, AGE, WEIGHT, DRAGONCHARACTER, DRAGONHEAD)" + "VALUES"
+                            + "('"+enter.getLogin()+"', " + dragon.getId() + ",'" + dragon.getName() + "', " + dragon.getCoordinates().getX() + ", " + dragon.getCoordinates().getY() + ", '" + dragon.getCreationDate() + "'," + dragon.getDescription() + ", " + dragon.getAge() + ", " + dragon.getWeight() + ",'" + dragon.getCharacter() + "', " + dragon.getHead().getEyesCount() + ")";
 
                     try {
                         dbConnection = getDBConnection();
@@ -255,27 +260,25 @@ public class CommandManager {
     }
 
 
-    public TreeSet<Dragon> remove_by_id() {
+    public TreeSet<Dragon> remove_by_id() throws SQLException {
         int a = 0;
         while (a == 0) {
             if (ts.isEmpty()) {
                 System.out.println("Коллекция пуста, сначала добавьте драконов!");
                 break;
             } else {
+                enter.Entering();
                 System.out.print("Введите id: ");
                 try {
                     Scanner scanner = new Scanner(System.in);
                     long s = scanner.nextLong();
                     ts.removeIf(dragon -> dragon.getId() == s);
-                    System.out.println("Дракон с id " + s + " удален");
                     String deleteTableSQL = "DELETE FROM dragon WHERE ID = " + s;
-                    Connection dbConnection = null;
-                    Statement statement = null;
                     try {
                         dbConnection = getDBConnection();
                         statement = dbConnection.createStatement();
                         statement.execute(deleteTableSQL);
-                        System.out.println("Record is deleted from DRAGON table!");
+                        System.out.println("Дракон с id " + s + " удален");
                     } catch (SQLException e) {
                         System.out.println(e.getMessage());
                     }

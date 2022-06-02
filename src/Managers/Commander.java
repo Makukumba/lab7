@@ -1,9 +1,11 @@
 package Managers;
 
 import Drago.Dragon;
+import Users.Enter;
 import commands.*;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -29,6 +31,7 @@ public class Commander {
         commands.put("remove_any_by_description", new Remove_any_by_description(cm));
         commands.put("print_field_descending_head", new Print_field_descending_head(cm));
         commands.put("create_table",new Create_table());
+        commands.put("auth", new Authorization());
     }
 
     public void start() throws IOException {
@@ -37,13 +40,15 @@ public class Commander {
             Scanner s = new Scanner(System.in);
             String text = s.nextLine();
             int a = 0;
-            for (Map.Entry<String, Command> command : commands.entrySet()) {
+           for (Map.Entry<String, Command> command : commands.entrySet()) {
 
                 if (text.equals(command.getKey())) {
                     command.getValue().execute();
                     a = 1;
                 }
             }
+
+
             if (a == 0) {
                 System.out.println("Команда не найдена");
             }

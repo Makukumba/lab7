@@ -26,6 +26,7 @@ public class Connector<pubilc> {
         Statement statement = null;
 
         String createTableSQL = "CREATE TABLE DRAGON("
+                + "LOGIN CHAR(100) UNIQUE, "
                 + "ID INTEGER UNIQUE, "
                 + "NAME CHAR(10) NOT NULL, "
                 + "X INTEGER NOT NULL, "
