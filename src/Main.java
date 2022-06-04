@@ -12,21 +12,11 @@ public class Main {
     public static void main(String args[]) throws SQLException {
         Connector connector = new Connector();
         UserBDCreator userBDCreator= new UserBDCreator();
-        //userBDCreator.UserDBCreate();
         Enter enter = new Enter();
         connector.createDbUserTable();
-        //AuthCheck authCheck = new AuthCheck();
-        //authCheck.Check();
-        //Auth auth = new Auth();
-        //auth.Authorise();
-        enter.Entering();
-
-        //connector.getDBConnection();
-
-        //connector.Insert();
-        //connector.Show();
-        //connector.Delete();
-
+        userBDCreator.UserDBCreate();
+        AuthCheck authCheck = new AuthCheck();
+        authCheck.Check();
         CommandManager cm = new CommandManager();
         Commander c = new Commander(cm);
         cm.read();

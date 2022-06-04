@@ -3,6 +3,7 @@ package commands;
 import Managers.CommandManager;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class RemoveById extends AbstractCommand {
     CommandManager cm;

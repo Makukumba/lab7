@@ -8,19 +8,18 @@ import java.sql.SQLException;
 
 public class ClearCommand extends AbstractCommand {
     CommandManager cm;
-    Enter enter = new Enter();
     public ClearCommand(CommandManager cm) {
         super("clear", "очистить информацию о коллекции");
         this.cm = cm;
     }
 
     public void execute() throws IOException {
+
         try {
-            enter.Entering();
+            cm.clear();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        cm.clear();
 
     }
 }

@@ -18,6 +18,8 @@ public class Enter {
     }
 
     public void Entering() throws SQLException {
+        AuthCheck authCheck = new AuthCheck();
+        authCheck.Check();
         boolean isUserExists = false;
         int a = 0;
         while (isUserExists == false) {

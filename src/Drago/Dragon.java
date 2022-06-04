@@ -13,8 +13,9 @@ public class Dragon implements Comparable<Dragon> {
     private Integer weight;
     private DragonCharacter character;
     private DragonHead head;
+    private String login;
 
-    public Dragon(Long id, String name, Coordinates coordinates,LocalDate creationDate, String description, int age, int weight, DragonCharacter character, DragonHead head) {
+    public Dragon(Long id, String name, Coordinates coordinates,LocalDate creationDate, String description, int age, int weight, DragonCharacter character, DragonHead head, String login) {
         this.id = id;
         this.name = name;
         this.coordinates = coordinates;
@@ -24,6 +25,7 @@ public class Dragon implements Comparable<Dragon> {
         this.weight = weight;
         this.character = character;
         this.head = head;
+        this.login = login;
 
 
     }
@@ -61,6 +63,8 @@ public class Dragon implements Comparable<Dragon> {
     public DragonHead getHead() {
         return head;
     }
+
+    public String getLogin() { return login; }
 
     public void setId(long id) {
         this.id = id;
@@ -110,7 +114,7 @@ public class Dragon implements Comparable<Dragon> {
     }
 
     public String toString() {
-        return " Id: " + id + " Имя: " + name + " Координаты: " + "(" + coordinates + ")" + " Время создания: "+creationDate+ " Возраст: " + age + " Описание: " + description + " Вес: " + weight + " Характер: " + character + " Количество глаз: " + head;
+        return " Id: " + id + " Имя: " + name + " Координаты: " + "(" + coordinates + ")" + " Время создания: "+creationDate+ " Возраст: " + age + " Описание: " + description + " Вес: " + weight + " Характер: " + character + " Количество глаз: " + head + " Создатель: " +login;
     }
 
 }

@@ -3,6 +3,7 @@ package commands;
 import Managers.CommandManager;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class Remove_any_by_description extends AbstractCommand {
     CommandManager cm;
@@ -13,7 +14,11 @@ public class Remove_any_by_description extends AbstractCommand {
     }
 
     public void execute() throws IOException {
-        cm.remove_by_d();
+        try {
+            cm.remove_by_d();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 }

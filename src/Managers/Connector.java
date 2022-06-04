@@ -4,7 +4,7 @@ import Drago.DragonChecker;
 
 import java.sql.*;
 
-public class Connector<pubilc> {
+public class Connector<c> {
     public static Connection getDBConnection() {
         Connection dbConnection = null;
         try {
@@ -13,7 +13,7 @@ public class Connector<pubilc> {
             System.out.println(e.getMessage());
         }
         try {
-            dbConnection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/test", "postgres", "admin");
+            dbConnection = DriverManager.getConnection("jdbc:postgresql://pg:5432/studs", "s335035", "qgl703");
             return dbConnection;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -26,16 +26,16 @@ public class Connector<pubilc> {
         Statement statement = null;
 
         String createTableSQL = "CREATE TABLE DRAGON("
-                + "LOGIN CHAR(100) UNIQUE, "
+                + "LOGIN CHAR(100) NOT NULL, "
                 + "ID INTEGER UNIQUE, "
-                + "NAME CHAR(10) NOT NULL, "
+                + "NAME CHAR(100) NOT NULL, "
                 + "X INTEGER NOT NULL, "
                 + "Y INTEGER NOT NULL, "
                 + "DATE DATE NOT NULL, "
-                + "DESCRIPTION CHAR(10) NOT NULL, "
+                + "DESCRIPTION CHAR(100) NOT NULL, "
                 + "AGE INTEGER NOT NULL, "
                 + "WEIGHT INTEGER NOT NULL, "
-                + "DRAGONCHARACTER CHAR(10) NOT NULL, "
+                + "DRAGONCHARACTER CHAR(100) NOT NULL, "
                 + "DRAGONHEAD DOUBLE PRECISION NOT NULL"
                 + ")";
 
@@ -113,7 +113,7 @@ public class Connector<pubilc> {
     }
 
     public void Delete() {
-        String deleteTableSQL = "DELETE FROM dragon WHERE ID = 2";
+        String deleteTableSQL = "DELETE FROM DRAGON ";
         Connection dbConnection = null;
         Statement statement = null;
         try {
@@ -121,7 +121,6 @@ public class Connector<pubilc> {
             statement = dbConnection.createStatement();
             // выполняем запрос delete SQL
             statement.execute(deleteTableSQL);
-            System.out.println("Record is deleted from DRAGON table!");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

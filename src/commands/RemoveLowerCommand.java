@@ -3,6 +3,7 @@ package commands;
 import Managers.CommandManager;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class RemoveLowerCommand extends AbstractCommand {
     CommandManager cm;
@@ -13,6 +14,10 @@ public class RemoveLowerCommand extends AbstractCommand {
     }
 
     public void execute() throws IOException {
-        cm.remove_lower();
+        try {
+            cm.remove_lower();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -19,6 +19,7 @@ public class Commander {
         commands.put("help", new HelpCommand(commands));
         commands.put("info", new InfoCommand(cm));
         commands.put("show", new ShowCommand(cm));
+        commands.put("save", new SaveCommand(cm));
         commands.put("add", new AddCommand(cm));
         commands.put("update", new UpdateCommand(cm));
         commands.put("remove_by_id", new RemoveById(cm));

@@ -1,9 +1,8 @@
 package Managers;
 
 import Drago.*;
+import Drago.Character;
 import Users.Enter;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import java.sql.*;
 import java.io.File;
@@ -23,10 +22,10 @@ public class CommandManager {
     Enter enter = new Enter();
     Connection dbConnection = null;
     Statement statement = null;
-
+    private Statement request;
     public TreeSet<Dragon> read() {
 
-        String selectTableSQL = "SELECT ID, NAME, X, Y, DATE, DESCRIPTION, AGE, WEIGHT, DRAGONCHARACTER, DRAGONHEAD from DRAGON";
+        String selectTableSQL = "SELECT ID, NAME, X, Y, DATE, DESCRIPTION, AGE, WEIGHT, DRAGONCHARACTER, DRAGONHEAD, LOGIN from DRAGON";
         Connection dbConnection = null;
         Statement statement = null;
         try {
@@ -36,9 +35,8 @@ public class CommandManager {
             while (rs.next()) {
                 String id = rs.getString("ID");
                 Long id1 = Long.valueOf(id);
-                String name = rs.getString("NAME");
+                String name = rs.getString("NAME").trim();
                 String name1 = String.valueOf(name).trim();
-                //Coordinates coordinates = new Coordinates(2,3);
                 String x = rs.getString("X");
                 String y = rs.getString("Y");
                 int x1 = Integer.valueOf(x);
@@ -52,19 +50,13 @@ public class CommandManager {
                 Integer age1 = Integer.valueOf(age);
                 String weight = rs.getString("WEIGHT");
                 Integer weight1 = Integer.valueOf(weight);
-                String dragoncharacter = rs.getString("DRAGONCHARACTER");
-                DragonCharacter dragonCharacter1 = DragonCharacter.EVIL;
-                if (dragoncharacter.equals("CUNNING")) {
-                    dragonCharacter1 = DragonCharacter.CUNNING;
-                } else if (dragoncharacter.equals("EVIL")) {
-                    dragonCharacter1 = DragonCharacter.EVIL;
-                } else if (dragoncharacter.equals("chaotic")) {
-                    dragonCharacter1 = DragonCharacter.CHAOTIC;
-                }
+                String dragoncharacter = rs.getString("DRAGONCHARACTER").trim();
+                Character character = new Character();
                 String dragonhead = rs.getString("DRAGONHEAD");
                 Double eyescount = Double.valueOf(dragonhead);
                 DragonHead dragonHead1 = new DragonHead(eyescount);
-                Dragon dragon = new Dragon(id1, name1, coordinates, creationDate, description1, age1, weight1, dragonCharacter1, dragonHead1);
+                String login = rs.getString("LOGIN").trim();
+                Dragon dragon = new Dragon(id1, name, coordinates, creationDate, description1, age1, weight1, character.Character(dragoncharacter), dragonHead1, login);
                 ts.add(dragon);
             }
         } catch (SQLException e) {
@@ -74,6 +66,38 @@ public class CommandManager {
         return ts;
     }
 
+    public void save() throws SQLException {
+        try {
+            //dbConnection.setAutoCommit(false);
+            Connector connector = new Connector();
+            connector.Delete();
+            for (Dragon dragon : ts) {
+                String insert = "INSERT INTO DRAGON (LOGIN, ID, NAME, X, Y, DATE, DESCRIPTION, AGE, WEIGHT, DRAGONCHARACTER, DRAGONHEAD)"
+                        + "VALUES ('" + dragon.getLogin() + "', " + dragon.getId() + ", '" + dragon.getName() + "', " + dragon.getCoordinates().getX() + ", " + dragon.getCoordinates().getY() + ", '" + dragon.getCreationDate() + "', '" + dragon.getDescription() + "', " + dragon.getAge() + ", " + dragon.getWeight() + ", '" + dragon.getCharacter() + "', " + dragon.getHead().getEyesCount() + ")";
+                try {
+                    dbConnection = getDBConnection();
+                    statement = dbConnection.createStatement();
+                    statement.executeUpdate(insert);
+
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                } finally {
+                    if (statement != null) {
+                        statement.close();
+                    }
+                    if (dbConnection != null) {
+                        dbConnection.close();
+                    }
+                }
+            }
+            System.out.println("Changes are saved successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Could not load the changes. Please try later.");
+        } catch (Exception ioException) {
+            System.out.println("Something bad with saving. Try again.");
+        }
+    }
 
     public void info() {
         if (ts.isEmpty()) {
@@ -99,10 +123,10 @@ public class CommandManager {
             e.printStackTrace();
         }
         DragonChecker dragonChecker = new DragonChecker();
-        Dragon dragon = new Dragon(dragonChecker.ID(ts), dragonChecker.NAME(), dragonChecker.COORDINATES(), dragonChecker.CREATIONDATE(), dragonChecker.DESCRIPTION(), dragonChecker.AGE(), dragonChecker.WEIGHT(), dragonChecker.CHAR(), dragonChecker.dragonHead());
+        Dragon dragon = new Dragon(dragonChecker.ID(ts), dragonChecker.NAME(), dragonChecker.COORDINATES(), dragonChecker.CREATIONDATE(), dragonChecker.DESCRIPTION(), dragonChecker.AGE(), dragonChecker.WEIGHT(), dragonChecker.CHAR(), dragonChecker.dragonHead(), enter.getLogin());
         String insertTableSQL = "INSERT INTO DRAGON"
                 + "(LOGIN, ID, NAME, X, Y, DATE, DESCRIPTION, AGE, WEIGHT, DRAGONCHARACTER, DRAGONHEAD)" + "VALUES"
-                + "('"+enter.getLogin()+"', " + dragon.getId() + ",'" + dragon.getName() + "', " + dragon.getCoordinates().getX() + ", " + dragon.getCoordinates().getY() + ", '" + dragon.getCreationDate() + "'," + dragon.getDescription() + ", " + dragon.getAge() + ", " + dragon.getWeight() + ",'" + dragon.getCharacter() + "', " + dragon.getHead().getEyesCount() + ")";
+                + "('" + enter.getLogin() + "', " + dragon.getId() + ",'" + dragon.getName() + "', " + dragon.getCoordinates().getX() + ", " + dragon.getCoordinates().getY() + ", '" + dragon.getCreationDate() + "', '" + dragon.getDescription() + "', " + dragon.getAge() + ", " + dragon.getWeight() + ",'" + dragon.getCharacter() + "', " + dragon.getHead().getEyesCount() + ")";
         try {
             dbConnection = getDBConnection();
             statement = dbConnection.createStatement();
@@ -135,38 +159,31 @@ public class CommandManager {
         }
     }
 
-    public TreeSet<Dragon> clear() {
-        ts.clear();
-        System.out.println("Коллекция очищена");
-        String deleteTableSQL = "DELETE FROM DRAGON";
-        Connection dbConnection = null;
-        Statement statement = null;
-        try {
-            dbConnection = getDBConnection();
-            statement = dbConnection.createStatement();
-            statement.execute(deleteTableSQL);
-            System.out.println("Таблица DRAGON очищена!");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+    public TreeSet<Dragon> clear() throws SQLException {
+        enter.Entering();
+        ts.removeIf(dragon -> dragon.getLogin().equals(enter.getLogin()));
+        long l = 1;
+        for (Dragon dragon : ts) {
+            dragon.setId(l);
+            l += 1;
         }
-
+        System.out.println("Из коллекции удалены все элементы, создателем которых является "+enter.getLogin());
         return ts;
     }
 
     public TreeSet<Dragon> add_if_max() throws SQLException {
+        enter.Entering();
         while (true) {
             try {
                 Scanner scanner = new Scanner(System.in);
                 System.out.print("Введите id: ");
                 long iD = scanner.nextLong();
                 if (iD > ts.last().getId()) {
-                    Dragon dragon = new Dragon(iD, dragonChecker.NAME(), dragonChecker.COORDINATES(), dragonChecker.CREATIONDATE(), dragonChecker.DESCRIPTION(), dragonChecker.AGE(), dragonChecker.WEIGHT(), dragonChecker.CHAR(), dragonChecker.dragonHead());
+                    Dragon dragon = new Dragon(iD, dragonChecker.NAME(), dragonChecker.COORDINATES(), dragonChecker.CREATIONDATE(), dragonChecker.DESCRIPTION(), dragonChecker.AGE(), dragonChecker.WEIGHT(), dragonChecker.CHAR(), dragonChecker.dragonHead(), enter.getLogin());
                     System.out.println("Дракон успешно добавлен в коллекцию");
-                    Connection dbConnection = null;
-                    Statement statement = null;
                     String insertTableSQL = "INSERT INTO DRAGON"
                             + "(LOGIN, ID, NAME, X, Y, DATE, DESCRIPTION, AGE, WEIGHT, DRAGONCHARACTER, DRAGONHEAD)" + "VALUES"
-                            + "('"+enter.getLogin()+"', " + dragon.getId() + ",'" + dragon.getName() + "', " + dragon.getCoordinates().getX() + ", " + dragon.getCoordinates().getY() + ", '" + dragon.getCreationDate() + "', " + dragon.getDescription() + ", " + dragon.getAge() + ", " + dragon.getWeight() + ",'" + dragon.getCharacter() + "', " + dragon.getHead().getEyesCount() + ")";
+                            + "('" + dragon.getLogin() + "', " + dragon.getId() + ",'" + dragon.getName() + "', " + dragon.getCoordinates().getX() + ", " + dragon.getCoordinates().getY() + ", '" + dragon.getCreationDate() + "', '" + dragon.getDescription() + "', " + dragon.getAge() + ", " + dragon.getWeight() + ",'" + dragon.getCharacter() + "', " + dragon.getHead().getEyesCount() + ")";
 
                     try {
                         dbConnection = getDBConnection();
@@ -206,6 +223,7 @@ public class CommandManager {
 
 
     public TreeSet<Dragon> add_if_min() throws SQLException {
+        enter.Entering();
         while (true) {
             try {
                 Scanner scanner = new Scanner(System.in);
@@ -214,13 +232,12 @@ public class CommandManager {
                 if (iD <= 0) {
                     System.out.println("id должен быть больше 0");
                 } else if (iD < ts.first().getId()) {
-                    Dragon dragon = new Dragon(iD, dragonChecker.NAME(), dragonChecker.COORDINATES(), dragonChecker.CREATIONDATE(), dragonChecker.DESCRIPTION(), dragonChecker.AGE(), dragonChecker.WEIGHT(), dragonChecker.CHAR(), dragonChecker.dragonHead());
-                    System.out.println("Дракон успешно добавлен в коллекцию");
+                    Dragon dragon = new Dragon(iD, dragonChecker.NAME(), dragonChecker.COORDINATES(), dragonChecker.CREATIONDATE(), dragonChecker.DESCRIPTION(), dragonChecker.AGE(), dragonChecker.WEIGHT(), dragonChecker.CHAR(), dragonChecker.dragonHead(), enter.getLogin());
                     Connection dbConnection = null;
                     Statement statement = null;
                     String insertTableSQL = "INSERT INTO DRAGON"
                             + "(LOGIN, ID, NAME, X, Y, DATE, DESCRIPTION, AGE, WEIGHT, DRAGONCHARACTER, DRAGONHEAD)" + "VALUES"
-                            + "('"+enter.getLogin()+"', " + dragon.getId() + ",'" + dragon.getName() + "', " + dragon.getCoordinates().getX() + ", " + dragon.getCoordinates().getY() + ", '" + dragon.getCreationDate() + "'," + dragon.getDescription() + ", " + dragon.getAge() + ", " + dragon.getWeight() + ",'" + dragon.getCharacter() + "', " + dragon.getHead().getEyesCount() + ")";
+                            + "('" + enter.getLogin() + "', " + dragon.getId() + ",'" + dragon.getName() + "', " + dragon.getCoordinates().getX() + ", " + dragon.getCoordinates().getY() + ", '" + dragon.getCreationDate() + "', '" + dragon.getDescription() + "', " + dragon.getAge() + ", " + dragon.getWeight() + ",'" + dragon.getCharacter() + "', " + dragon.getHead().getEyesCount() + ")";
 
                     try {
                         dbConnection = getDBConnection();
@@ -255,44 +272,44 @@ public class CommandManager {
             }
         }
 
-
         return ts;
     }
 
 
-    public TreeSet<Dragon> remove_by_id() throws SQLException {
+
+    public TreeSet<Dragon> remove_by_id() {
         int a = 0;
         while (a == 0) {
             if (ts.isEmpty()) {
                 System.out.println("Коллекция пуста, сначала добавьте драконов!");
                 break;
             } else {
-                enter.Entering();
                 System.out.print("Введите id: ");
                 try {
                     Scanner scanner = new Scanner(System.in);
                     long s = scanner.nextLong();
-                    ts.removeIf(dragon -> dragon.getId() == s);
-                    String deleteTableSQL = "DELETE FROM dragon WHERE ID = " + s;
-                    try {
-                        dbConnection = getDBConnection();
-                        statement = dbConnection.createStatement();
-                        statement.execute(deleteTableSQL);
-                        System.out.println("Дракон с id " + s + " удален");
-                    } catch (SQLException e) {
-                        System.out.println(e.getMessage());
+                    for (Dragon dragon : ts) {
+                        if (dragon.getId()==s & dragon.getLogin().equals(enter.getLogin())) {
+                            a = 1;
+                        }
                     }
-                    a = 1;
-                    break;
+                    if (a==1){
+                        ts.removeIf(dragon -> dragon.getId()==s);
+                        System.out.println("Дракон с id "+s+" удален");
+                        long l = 1;
+                        for (Dragon dragon : ts) {
+                            dragon.setId(l);
+                            l += 1;
+                        }
+                    }
 
-
+                    if (a == 0) {
+                        System.out.println("Дракона с таким id, пренадлежащего пользователю"+enter.getLogin()+" не существует");
+                    }
                 } catch (InputMismatchException exception) {
                     System.out.println("Значение id должно быть представлено числом");
                 } catch (NullPointerException exception) {
                     System.out.println("Поле не может быть null");
-                }
-                if (a == 0) {
-                    System.out.println("Дракона с таким id не существует");
                 }
             }
         }
@@ -300,8 +317,8 @@ public class CommandManager {
     }
 
 
-    public TreeSet<Dragon> remove_by_d() {
-
+    public TreeSet<Dragon> remove_by_d() throws SQLException {
+        enter.Entering();
         int a = 0;
         while (a == 0) {
             if (ts.isEmpty()) {
@@ -312,26 +329,21 @@ public class CommandManager {
                 Scanner scanner = new Scanner(System.in);
                 String s = scanner.nextLine();
                 for (Dragon dragon : ts) {
-                    if (dragon.getDescription().equals(s)) {
-                        ts.remove(dragon);
-                        System.out.println("Дракон с описанием " + s + " удален");
-                        String deleteTableSQL = "DELETE FROM dragon WHERE DESCRIPTION = " + s;
-                        Connection dbConnection = null;
-                        Statement statement = null;
-                        try {
-                            dbConnection = getDBConnection();
-                            statement = dbConnection.createStatement();
-                            statement.execute(deleteTableSQL);
-                            System.out.println("Record is deleted from DRAGON table!");
-                        } catch (SQLException e) {
-                            System.out.println(e.getMessage());
-                        }
+                    if (dragon.getDescription().equals(s) & dragon.getLogin().equals(enter.getLogin())) {
                         a = 1;
-                        break;
+                    }
+                }
+                if (a==1){
+                    ts.removeIf(dragon -> dragon.getDescription().equals(s));
+                    System.out.println("Все драконы с описанием "+s+" удалены");
+                    long l = 1;
+                    for (Dragon dragon : ts) {
+                        dragon.setId(l);
+                        l += 1;
                     }
                 }
                 if (a == 0) {
-                    System.out.println("Дракона с таким описанием не существует, поробуйте снова");
+                    System.out.println("Дракона с таким описанием и созданным пользователем "+enter.getLogin()+ " не существует, поробуйте снова");
                 }
             }
         }
@@ -346,44 +358,31 @@ public class CommandManager {
         while (a == 0 || a == 2) {
             if (ts.isEmpty()) {
                 System.out.println("Коллекция пуста, сначала добавьте драконов");
+                a = 1;
             } else {
-
+                enter.Entering();
                 try {
                     Scanner scanner = new Scanner(System.in);
                     System.out.print("Введите id дракона: ");
                     long s = scanner.nextLong();
                     for (Dragon dragon : ts) {
                         if (dragon.getId() == s) {
-                            DragonChecker dragonChecker = new DragonChecker();
-                            dragon.setName(dragonChecker.NAME());
-                            dragon.setCoordinates(dragonChecker.COORDINATES());
-                            dragon.setCreationDate(dragonChecker.CREATIONDATE());
-                            dragon.setAge(dragonChecker.AGE());
-                            dragon.setDescription(dragonChecker.DESCRIPTION());
-                            dragon.setWeight(dragonChecker.WEIGHT());
-                            dragon.setCharacter(dragonChecker.CHAR());
-                            dragon.setHead(dragonChecker.dragonHead());
-                            a = 1;
-                            Connection dbConnection = null;
-                            Statement statement = null;
-                            String updateTableSQL = "UPDATE DRAGON SET NAME = '" + dragon.getName() + "', X = " + dragon.getCoordinates().getX() + ",Y = " + dragon.getCoordinates().getY() + ", DESCRIPTION = '" + dragon.getDescription() + "', DATE = '" + dragon.getCreationDate() + "', AGE = " + dragon.getAge() + ", WEIGHT = " + dragon.getWeight() + ", DRAGONCHARACTER = '" + dragon.getCharacter() + "', DRAGONHEAD = " + dragon.getHead().getEyesCount() + " WHERE ID =" + s;
-                            try {
-                                dbConnection = getDBConnection();
-                                statement = dbConnection.createStatement();
-                                // выполнить SQL запрос
-                                statement.executeUpdate(updateTableSQL);
-                                System.out.println("Table \"dragon\" is updated!");
-                            } catch (SQLException e) {
-                                System.out.println(e.getMessage());
-                            } finally {
-                                if (statement != null) {
-                                    statement.close();
-                                }
-                                if (dbConnection != null) {
-                                    dbConnection.close();
-                                }
+                            if (dragon.getLogin().equals(enter.getLogin())) {
+                                DragonChecker dragonChecker = new DragonChecker();
+                                dragon.setName(dragonChecker.NAME());
+                                dragon.setCoordinates(dragonChecker.COORDINATES());
+                                dragon.setCreationDate(dragonChecker.CREATIONDATE());
+                                dragon.setAge(dragonChecker.AGE());
+                                dragon.setDescription(dragonChecker.DESCRIPTION());
+                                dragon.setWeight(dragonChecker.WEIGHT());
+                                dragon.setCharacter(dragonChecker.CHAR());
+                                dragon.setHead(dragonChecker.dragonHead());
+                                a = 1;
+                                System.out.println("Значения дракона успешно обновлены");
+                            } else {
+                                System.out.println("Этот дракон принадлежит другому пользователю");
+                                a = 1;
                             }
-                            System.out.println("Значения дракона успешно обновлены");
                         }
                     }
                     if (a == 0) {
@@ -401,7 +400,8 @@ public class CommandManager {
     }
 
 
-    public TreeSet<Dragon> remove_lower() {
+    public TreeSet<Dragon> remove_lower() throws SQLException {
+        enter.Entering();
         int a = 0;
         while (a == 0) {
             if (ts.isEmpty()) {
@@ -412,19 +412,12 @@ public class CommandManager {
                 long s = scanner.nextLong();
                 try {
 
-                    ts.removeIf(dragon -> dragon.getId() < s);
-                    System.out.println("Драконы с id меньше, чем " + s + " удалены");
-                    String deleteTableSQL = "DELETE FROM dragon WHERE ID < " + s;
-                    Connection dbConnection = null;
-                    Statement statement = null;
-                    try {
-                        dbConnection = getDBConnection();
-                        statement = dbConnection.createStatement();
-                        // выполняем запрос delete SQL
-                        statement.execute(deleteTableSQL);
-                        System.out.println("Record is deleted from DRAGON table!");
-                    } catch (SQLException e) {
-                        System.out.println(e.getMessage());
+                    ts.removeIf(dragon -> dragon.getId() < s & enter.getLogin().equals(dragon.getLogin()));
+                    System.out.println("Драконы с id меньше, чем " + s + ", принадлежащие "+enter.getLogin()+ " удалены");
+                    long l = 1;
+                    for (Dragon dragon : ts) {
+                        dragon.setId(l);
+                        l += 1;
                     }
                     a = 1;
                     break;
