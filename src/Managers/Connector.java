@@ -42,7 +42,6 @@ public class Connector<c> {
         try {
             dbConnection = getDBConnection();
             statement = dbConnection.createStatement();
-            // выполнить SQL запрос
             statement.execute(createTableSQL);
             System.out.println("Table \"dragon\" is created!");
         } catch (SQLException e) {
@@ -58,60 +57,6 @@ public class Connector<c> {
 
     }
 
-    public void Insert() throws SQLException {
-        Connection dbConnection = null;
-        Statement statement = null;
-        DragonChecker d = new DragonChecker();
-        String aGE = Integer.toString(d.AGE());
-        String  insertTableSQL = "INSERT INTO DRAGON"
-                + "(ID, NAME, DESCRIPTION, AGE) " + "VALUES"
-                + "(5, 'Makumba','lox'," +aGE+ ")";
-        try {
-            dbConnection = getDBConnection();
-            statement = dbConnection.createStatement();
-            // выполнить SQL запрос
-            statement.executeUpdate(insertTableSQL);
-            System.out.println("Table \"dragon\" is updated!");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            if (statement != null) {
-                statement.close();
-            }
-            if (dbConnection != null) {
-                dbConnection.close();
-            }
-        }
-
-    }
-
-    public void Show() {
-        String selectTableSQL = "SELECT ID, NAME, DESCRIPTION, AGE from DRAGON";
-        Connection dbConnection = null;
-        Statement statement = null;
-        try {
-            dbConnection = getDBConnection();
-            statement = dbConnection.createStatement();
-
-            // выбираем данные с БД
-            ResultSet rs = statement.executeQuery(selectTableSQL);
-
-            // И если что то было получено то цикл while сработает
-            while (rs.next()) {
-                String id = rs.getString("ID");
-                String name = rs.getString("NAME");
-                String description = rs.getString("DESCRIPTION");
-                String age = rs.getString("AGE");
-                System.out.println("id : " + id);
-                System.out.println("name : " + name);
-                System.out.println("description : " + description);
-                System.out.println("age : " + age);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
     public void Delete() {
         String deleteTableSQL = "DELETE FROM DRAGON ";
         Connection dbConnection = null;
@@ -119,7 +64,6 @@ public class Connector<c> {
         try {
             dbConnection = getDBConnection();
             statement = dbConnection.createStatement();
-            // выполняем запрос delete SQL
             statement.execute(deleteTableSQL);
         } catch (SQLException e) {
             System.out.println(e.getMessage());

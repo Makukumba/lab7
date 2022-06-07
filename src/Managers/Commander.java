@@ -33,6 +33,7 @@ public class Commander {
         commands.put("print_field_descending_head", new Print_field_descending_head(cm));
         commands.put("create_table",new Create_table());
         commands.put("auth", new Authorization());
+        commands.put("show_users", new ShowUsersCommand());
     }
 
     public void start() throws IOException {

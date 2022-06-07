@@ -9,7 +9,7 @@ public class Create_table extends AbstractCommand{
 
 
     public Create_table() {
-        super("create_table", "создаёт таблицу");
+        super("create_table", "создаёт таблицу Драконов");
     }
 
     public void execute() throws IOException {

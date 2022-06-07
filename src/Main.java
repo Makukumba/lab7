@@ -9,12 +9,7 @@ import Users.UserBDCreator;
 
 
 public class Main {
-    public static void main(String args[]) throws SQLException {
-        Connector connector = new Connector();
-        UserBDCreator userBDCreator= new UserBDCreator();
-        Enter enter = new Enter();
-        connector.createDbUserTable();
-        userBDCreator.UserDBCreate();
+    public static void main(String args[]) {
         AuthCheck authCheck = new AuthCheck();
         authCheck.Check();
         CommandManager cm = new CommandManager();
